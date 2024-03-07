@@ -123,17 +123,17 @@
 /*!
  * Maximum RX window duration
  */
-#define AU915_MAX_RX_WINDOW 3000
+#define AU915_MAX_RX_WINDOW 650
 
 /*!
  * Receive delay 1
  */
-#define AU915_RECEIVE_DELAY1 1000
+#define AU915_RECEIVE_DELAY1 5000
 
 /*!
  * Receive delay 2
  */
-#define AU915_RECEIVE_DELAY2 2000
+#define AU915_RECEIVE_DELAY2 6000
 
 /*!
  * Join accept delay 1

@@ -813,7 +813,7 @@ lmh_error_status lmh_init(lmh_callback_t *callbacks, lmh_param_t lora_param, boo
 		lmh_setSubBandChannels(1);
 		break;
 	case LORAMAC_REGION_AU915:
-		lmh_setSubBandChannels(2);
+		lmh_setSubBandChannels(1);
 		break;
 	case LORAMAC_REGION_CN470:
 		lmh_setSubBandChannels(11);
