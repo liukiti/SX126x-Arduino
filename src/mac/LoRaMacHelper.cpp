@@ -726,7 +726,7 @@ lmh_error_status lmh_init(lmh_callback_t *callbacks, lmh_param_t lora_param, boo
 		sprintf(strlog3, "AppKey=%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X",
 				AppKey[0], AppKey[1], AppKey[2], AppKey[3], AppKey[4], AppKey[5], AppKey[6], AppKey[7],
 				AppKey[8], AppKey[9], AppKey[10], AppKey[11], AppKey[12], AppKey[13], AppKey[14], AppKey[15]);
-		LOG_LIB("LMH", "OTAA \n%s\nDevAdd=%08X\n%s\n%s", strlog1, DevAddr, strlog2, strlog3);
+		LOG_LIB("LMH", "OTAA \n%s\nDevAdd=%08X\n%s\n%s", strlog1, (unsigned int)DevAddr, strlog2, strlog3);
 	}
 	else
 	{
@@ -743,7 +743,7 @@ lmh_error_status lmh_init(lmh_callback_t *callbacks, lmh_param_t lora_param, boo
 		sprintf(strlog3, "AppSKey=%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X",
 				AppSKey[0], AppSKey[1], AppSKey[2], AppSKey[3], AppSKey[4], AppSKey[5], AppSKey[6], AppSKey[7],
 				AppSKey[8], AppSKey[9], AppSKey[10], AppSKey[11], AppSKey[12], AppSKey[13], AppSKey[14], AppSKey[15]);
-		LOG_LIB("LMH", "ABP \n%s\nDevAdd=%08X\n%s\n%s", strlog1, DevAddr, strlog2, strlog3);
+		LOG_LIB("LMH", "ABP \n%s\nDevAdd=%08X\n%s\n%s", strlog1, (unsigned int)DevAddr, strlog2, strlog3);
 	}
 
 	LoRaMacPrimitives.MacMcpsConfirm = McpsConfirm;

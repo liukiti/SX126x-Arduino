@@ -69,8 +69,8 @@ Maintainer: Miguel Luis and Gregory Cristian
 
 /**@brief Enable or disable LoRaWAN Adaptive Data Rate enabled (the end-device should be static here).
  */
-#define LORAWAN_ADR_ON true	  /**< LoRaWAN Adaptive Data Rate enabled (the end-device should be static here). */
-#define LORAWAN_ADR_OFF false /**< LoRaWAN Adaptive Data Rate disabled. */
+#define LORAWAN_ADR_ON false	  /**< LoRaWAN Adaptive Data Rate enabled (the end-device should be static here). */
+#define LORAWAN_ADR_OFF true /**< LoRaWAN Adaptive Data Rate disabled. */
 
 /**@brief Select if a hard coded device ID is used or an automatic generated one
  * When set to 1 DevEui is LORAWAN_DEVICE_EUI

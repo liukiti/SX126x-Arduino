@@ -477,7 +477,7 @@ void RegionAS923ApplyCFList(ApplyCFListParams_t *applyCFList)
 
 			// Initialize alternative frequency to 0
 			newChannel.Rx1Frequency = 0;
-			LOG_LIB("AS923", "Apply CF list: new channel at Freq = %d", newChannel.Frequency);
+			LOG_LIB("AS923", "Apply CF list: new channel at Freq = %ld", newChannel.Frequency);
 		}
 		else
 		{

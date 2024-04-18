@@ -448,7 +448,7 @@ void RegionEU868ApplyCFList(ApplyCFListParams_t *applyCFList)
 			newChannel.Frequency |= ((uint32_t)applyCFList->Payload[i + 2] << 16);
 			newChannel.Frequency *= 100;
 
-			LOG_LIB("EU868", "Apply CF list: new channel at Freq = %d", newChannel.Frequency);
+			LOG_LIB("EU868", "Apply CF list: new channel at Freq = %ld", newChannel.Frequency);
 			// Initialize alternative frequency to 0
 			newChannel.Rx1Frequency = 0;
 		}

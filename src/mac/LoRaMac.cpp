@@ -626,7 +626,7 @@ static void OnRadioTxDone(void)
 	// Setup timers
 	if (IsRxWindowsEnabled == true)
 	{
-		LOG_LIB("LM", "OnRadioTxDone => RX Windows #1 %d #2 %d", RxWindow1Delay, RxWindow2Delay);
+		LOG_LIB("LM", "OnRadioTxDone => RX Windows #1 %ld #2 %ld", RxWindow1Delay, RxWindow2Delay);
 
 		TimerSetValue(&RxWindowTimer1, RxWindow1Delay);
 		TimerStart(&RxWindowTimer1);
@@ -2055,7 +2055,7 @@ static LoRaMacStatus_t ScheduleTx(void)
 
 		if ((IsLoRaMacNetworkJoined == JOIN_ONGOING) && (send_join_now))
 		{
-			LOG_LIB("LM", "dutyCycleTimeOff was = %d", dutyCycleTimeOff);
+			LOG_LIB("LM", "dutyCycleTimeOff was = %ld", dutyCycleTimeOff);
 			dutyCycleTimeOff = 0;
 			send_join_now = false;
 			LOG_LIB("LM", "Set send_join_now to false");
@@ -2404,7 +2404,7 @@ LoRaMacStatus_t SendFrameOnChannel(uint8_t channel)
 	{
 		JoinRequestTrials++;
 	}
-
+	LOG_LIB("LM", "Counter: %ld | Channel = %d | ", UpLinkCounter, channel);
 	// Send now
 	Radio.Send(LoRaMacBuffer, LoRaMacBufferPktLen);
 
@@ -3398,7 +3398,7 @@ LoRaMacStatus_t LoRaMacMcpsRequest(McpsReq_t *mcpsRequest)
 	uint8_t fPort = 0;
 	void *fBuffer;
 	uint16_t fBufferSize;
-	int8_t datarate;
+	int8_t datarate = 0;
 	bool readyToSend = false;
 
 	if (mcpsRequest == NULL)
