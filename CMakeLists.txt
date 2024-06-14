@@ -27,7 +27,7 @@ set(SX126x_Arduino_srcs
 )
 
 idf_component_register(SRCS ${SX126x_Arduino_srcs}
-                      INCLUDE_DIRS "src"
+                      INCLUDE_DIRS "src/radio/sx126x/" "src"
                       REQUIRES arduino
                       )
 #https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/build-system.html#controlling-component-compilation

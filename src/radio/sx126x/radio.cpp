@@ -27,7 +27,9 @@
 #include "sx126x.h"
 #include "boards/sx126x/sx126x-board.h"
 #include "boards/mcu/timer.h"
+#include "loraEvents.h"
 
+loraEvents_t *_p2p, *_lrw;
 /* Tx and Rx timers
  */
 TimerEvent_t TxTimeoutTimer;
@@ -1307,9 +1309,26 @@ void RadioBgIrqProcess(void)
 			TimerStop(&TxTimeoutTimer);
 			//!< Update operating mode state to a value lower than \ref MODE_STDBY_XOSC
 			SX126xSetOperatingMode(MODE_STDBY_RC);
-			if ((RadioEvents != NULL) && (RadioEvents->TxDone != NULL))
+
+			if(RadioPublicNetwork.Current == true)
 			{
-				RadioEvents->TxDone();
+				if ((RadioEvents != NULL) && (RadioEvents->TxDone != NULL))
+				{
+					RadioEvents->TxDone();
+				}
+
+				if((_lrw != NULL) && (_lrw->TxDone != NULL))
+				{
+					_lrw->TxDone();
+				}
+
+			}
+			else
+			{
+				if((_p2p != NULL) && (_p2p->TxDone != NULL))
+				{
+					_p2p->TxDone();
+				}
 			}
 		}
 
@@ -1343,18 +1362,49 @@ void RadioBgIrqProcess(void)
 				memset(RadioRxPayload, 0, 255);
 				SX126xGetPayload(RadioRxPayload, &size, 255);
 				SX126xGetPacketStatus(&RadioPktStatus);
-				if ((RadioEvents != NULL) && (RadioEvents->RxError))
+				if(RadioPublicNetwork.Current == true)
 				{
-					RadioEvents->RxError();
+					if ((RadioEvents != NULL) && (RadioEvents->RxError))
+					{
+						RadioEvents->RxError();
+					}
+					
+					if((_lrw != NULL) && (_lrw->RxError != NULL))
+					{
+						_lrw->RxError();
+					}
+				}
+				else
+				{
+					if((_p2p != NULL) && (_p2p->RxError != NULL))
+					{
+						_p2p->RxError();
+					}
 				}
 			}
 			else
 			{
 				SX126xGetPayload(RadioRxPayload, &size, 255);
 				SX126xGetPacketStatus(&RadioPktStatus);
-				if ((RadioEvents != NULL) && (RadioEvents->RxDone != NULL))
+				if(RadioPublicNetwork.Current == true)
 				{
-					RadioEvents->RxDone(RadioRxPayload, size, RadioPktStatus.Params.LoRa.RssiPkt, RadioPktStatus.Params.LoRa.SnrPkt);
+					if ((RadioEvents != NULL) && (RadioEvents->RxDone != NULL))
+					{
+						RadioEvents->RxDone(RadioRxPayload, size, RadioPktStatus.Params.LoRa.RssiPkt, RadioPktStatus.Params.LoRa.SnrPkt);
+
+					}
+
+					if((_lrw != NULL) && (_lrw->RxDone != NULL))
+					{
+						_lrw->RxDone(RadioRxPayload, size, RadioPktStatus.Params.LoRa.RssiPkt, RadioPktStatus.Params.LoRa.SnrPkt);
+					}
+				}
+				else
+				{
+					if((_p2p != NULL) && (_p2p->RxDone != NULL))
+					{
+						_p2p->RxDone(RadioRxPayload, size, RadioPktStatus.Params.LoRa.RssiPkt, RadioPktStatus.Params.LoRa.SnrPkt);
+					}
 				}
 			}
 		}
@@ -1381,9 +1431,24 @@ void RadioBgIrqProcess(void)
 				TimerStop(&TxTimeoutTimer);
 				//!< Update operating mode state to a value lower than \ref MODE_STDBY_XOSC
 				SX126xSetOperatingMode(MODE_STDBY_RC);
-				if ((RadioEvents != NULL) && (RadioEvents->TxTimeout != NULL))
+				if(RadioPublicNetwork.Current == true)
 				{
-					RadioEvents->TxTimeout();
+					if ((RadioEvents != NULL) && (RadioEvents->TxTimeout != NULL))
+					{
+						RadioEvents->TxTimeout();
+					}
+
+					if((_lrw != NULL) && (_lrw->TxTimeout != NULL))
+					{
+						_lrw->TxTimeout(IRQ_TYPE);
+					}
+				}
+				else
+				{
+					if((_p2p != NULL) && (_p2p->TxTimeout != NULL))
+					{
+						_p2p->TxTimeout(IRQ_TYPE);
+					}
 				}
 			}
 			else if (SX126xGetOperatingMode() == MODE_RX)
@@ -1393,9 +1458,24 @@ void RadioBgIrqProcess(void)
 				TimerStop(&RxTimeoutTimer);
 				//!< Update operating mode state to a value lower than \ref MODE_STDBY_XOSC
 				SX126xSetOperatingMode(MODE_STDBY_RC);
-				if ((RadioEvents != NULL) && (RadioEvents->RxTimeout != NULL))
+				if(RadioPublicNetwork.Current == true)
 				{
-					RadioEvents->RxTimeout();
+					if ((RadioEvents != NULL) && (RadioEvents->RxTimeout != NULL))
+					{
+						RadioEvents->RxTimeout();
+					}
+
+					if((_lrw != NULL) && (_lrw->RxTimeout != NULL))
+					{
+						_lrw->RxTimeout(IRQ_TYPE);
+					}
+				}
+				else
+				{
+					if((_p2p != NULL) && (_p2p->RxTimeout != NULL))
+					{
+						_p2p->RxTimeout(IRQ_TYPE);
+					}
 				}
 			}
 		}
@@ -1429,9 +1509,23 @@ void RadioBgIrqProcess(void)
 				//!< Update operating mode state to a value lower than \ref MODE_STDBY_XOSC
 				SX126xSetOperatingMode(MODE_STDBY_RC);
 			}
-			if ((RadioEvents != NULL) && (RadioEvents->RxError != NULL))
+			if(RadioPublicNetwork.Current == true)
 			{
-				RadioEvents->RxError();
+				if ((RadioEvents != NULL) && (RadioEvents->RxError != NULL))
+				{
+					RadioEvents->RxError();
+				}
+				if((_lrw != NULL) && (_lrw->RxError != NULL))
+				{
+					_lrw->RxError();
+				}
+			}
+			else
+			{
+				if((_p2p != NULL) && (_p2p->RxError != NULL))
+				{
+					_p2p->RxError();
+				}
 			}
 		}
 	}
@@ -1442,9 +1536,23 @@ void RadioBgIrqProcess(void)
 		{
 			LOG_LIB("RADIO", "TimerRxTimeout");
 			TimerStop(&RxTimeoutTimer);
-			if ((RadioEvents != NULL) && (RadioEvents->RxTimeout != NULL))
+			if(RadioPublicNetwork.Current == true)
 			{
-				RadioEvents->RxTimeout();
+				if ((RadioEvents != NULL) && (RadioEvents->RxTimeout != NULL))
+				{
+					RadioEvents->RxTimeout();
+				}
+				if((_lrw != NULL) && (_lrw->RxTimeout != NULL))
+				{
+					_lrw->RxTimeout(TIMER_TYPE);
+				}
+			}
+			else
+			{
+				if((_p2p != NULL) && (_p2p->RxTimeout != NULL))
+				{
+					_p2p->RxTimeout(TIMER_TYPE);
+				}
 			}
 		}
 	}
@@ -1455,9 +1563,24 @@ void RadioBgIrqProcess(void)
 		{
 			LOG_LIB("RADIO", "TimerTxTimeout");
 			TimerStop(&TxTimeoutTimer);
-			if ((RadioEvents != NULL) && (RadioEvents->TxTimeout != NULL))
+			if(RadioPublicNetwork.Current == true)
 			{
-				RadioEvents->TxTimeout();
+				if ((RadioEvents != NULL) && (RadioEvents->TxTimeout != NULL))
+				{
+					RadioEvents->TxTimeout();
+				}
+
+				if((_lrw != NULL) && (_lrw->TxTimeout != NULL))
+				{
+					_lrw->TxTimeout(TIMER_TYPE);
+				}
+			}
+			else
+			{
+				if((_p2p != NULL) && (_p2p->TxTimeout != NULL))
+				{
+					_p2p->TxTimeout(TIMER_TYPE);
+				}
 			}
 		}
 	}
@@ -1476,4 +1599,14 @@ void RadioIrqProcessAfterDeepSleep(void)
 	IrqFired = true;
 	BoardEnableIrq();
 	RadioBgIrqProcess();
+}
+
+void setP2PEvents(loraEvents_t *p2p)
+{
+	_p2p = p2p;
+}
+
+void setLRWEvents(loraEvents_t *lrw)
+{
+	_lrw = lrw;
 }
