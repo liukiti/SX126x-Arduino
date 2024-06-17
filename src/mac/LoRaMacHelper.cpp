@@ -750,8 +750,8 @@ lmh_error_status lmh_init(lmh_callback_t *callbacks, lmh_param_t lora_param, boo
 	LoRaMacPrimitives.MacMcpsIndication = McpsIndication;
 	LoRaMacPrimitives.MacMlmeConfirm = MlmeConfirm;
 	LoRaMacCallbacks.GetBatteryLevel = m_callbacks->BoardGetBatteryLevel;
-
-	error_status = LoRaMacInitialization(&LoRaMacPrimitives, &LoRaMacCallbacks, region, nodeClass, region_change);
+	
+	error_status = LoRaMacInitialization(&LoRaMacPrimitives, &LoRaMacCallbacks, region, nodeClass, region_change, m_param.txParam);
 	if (error_status != LORAMAC_STATUS_OK)
 	{
 		return LMH_ERROR;
