@@ -1338,7 +1338,9 @@ void RadioBgIrqProcess(void)
 			uint8_t size;
 
 			rx_timeout_handled = true;
-			TimerStop(&RxTimeoutTimer);
+			if (RadioPublicNetwork.Current)
+				TimerStop(&RxTimeoutTimer);
+		
 			if (RxContinuous == false)
 			{
 				//!< Update operating mode state to a value lower than \ref MODE_STDBY_XOSC
