@@ -29,7 +29,7 @@
 #include "boards/mcu/timer.h"
 #include "loraEvents.h"
 
-loraEvents_t *_p2p, *_lrw;
+loraEvents_t *_events;
 /* Tx and Rx timers
  */
 TimerEvent_t TxTimeoutTimer;
@@ -1317,18 +1317,11 @@ void RadioBgIrqProcess(void)
 					RadioEvents->TxDone();
 				}
 
-				if((_lrw != NULL) && (_lrw->TxDone != NULL))
-				{
-					_lrw->TxDone();
-				}
-
 			}
-			else
+			
+			if((_events != NULL) && (_events->TxDone != NULL))
 			{
-				if((_p2p != NULL) && (_p2p->TxDone != NULL))
-				{
-					_p2p->TxDone();
-				}
+				_events->TxDone(RadioPublicNetwork.Current);
 			}
 		}
 
@@ -1371,17 +1364,10 @@ void RadioBgIrqProcess(void)
 						RadioEvents->RxError();
 					}
 					
-					if((_lrw != NULL) && (_lrw->RxError != NULL))
-					{
-						_lrw->RxError();
-					}
 				}
-				else
+				if((_events != NULL) && (_events->RxError != NULL))
 				{
-					if((_p2p != NULL) && (_p2p->RxError != NULL))
-					{
-						_p2p->RxError();
-					}
+					_events->RxError(RadioPublicNetwork.Current);
 				}
 			}
 			else
@@ -1396,17 +1382,10 @@ void RadioBgIrqProcess(void)
 
 					}
 
-					if((_lrw != NULL) && (_lrw->RxDone != NULL))
-					{
-						_lrw->RxDone(RadioRxPayload, size, RadioPktStatus.Params.LoRa.RssiPkt, RadioPktStatus.Params.LoRa.SnrPkt);
-					}
 				}
-				else
+				if((_events != NULL) && (_events->RxDone != NULL))
 				{
-					if((_p2p != NULL) && (_p2p->RxDone != NULL))
-					{
-						_p2p->RxDone(RadioRxPayload, size, RadioPktStatus.Params.LoRa.RssiPkt, RadioPktStatus.Params.LoRa.SnrPkt);
-					}
+					_events->RxDone(RadioPublicNetwork.Current, RadioRxPayload, size, RadioPktStatus.Params.LoRa.RssiPkt, RadioPktStatus.Params.LoRa.SnrPkt);
 				}
 			}
 		}
@@ -1439,18 +1418,10 @@ void RadioBgIrqProcess(void)
 					{
 						RadioEvents->TxTimeout();
 					}
-
-					if((_lrw != NULL) && (_lrw->TxTimeout != NULL))
-					{
-						_lrw->TxTimeout(IRQ_TYPE);
-					}
 				}
-				else
+				if((_events != NULL) && (_events->TxTimeout != NULL))
 				{
-					if((_p2p != NULL) && (_p2p->TxTimeout != NULL))
-					{
-						_p2p->TxTimeout(IRQ_TYPE);
-					}
+					_events->TxTimeout(RadioPublicNetwork.Current, IRQ_TYPE);
 				}
 			}
 			else if (SX126xGetOperatingMode() == MODE_RX)
@@ -1467,17 +1438,10 @@ void RadioBgIrqProcess(void)
 						RadioEvents->RxTimeout();
 					}
 
-					if((_lrw != NULL) && (_lrw->RxTimeout != NULL))
-					{
-						_lrw->RxTimeout(IRQ_TYPE);
-					}
 				}
-				else
+				if((_events != NULL) && (_events->RxTimeout != NULL))
 				{
-					if((_p2p != NULL) && (_p2p->RxTimeout != NULL))
-					{
-						_p2p->RxTimeout(IRQ_TYPE);
-					}
+					_events->RxTimeout(RadioPublicNetwork.Current, IRQ_TYPE);
 				}
 			}
 		}
@@ -1517,17 +1481,10 @@ void RadioBgIrqProcess(void)
 				{
 					RadioEvents->RxError();
 				}
-				if((_lrw != NULL) && (_lrw->RxError != NULL))
-				{
-					_lrw->RxError();
-				}
 			}
-			else
+			if((_events != NULL) && (_events->RxError != NULL))
 			{
-				if((_p2p != NULL) && (_p2p->RxError != NULL))
-				{
-					_p2p->RxError();
-				}
+				_events->RxError(RadioPublicNetwork.Current);
 			}
 		}
 	}
@@ -1544,17 +1501,10 @@ void RadioBgIrqProcess(void)
 				{
 					RadioEvents->RxTimeout();
 				}
-				if((_lrw != NULL) && (_lrw->RxTimeout != NULL))
-				{
-					_lrw->RxTimeout(TIMER_TYPE);
-				}
 			}
-			else
+			if((_events != NULL) && (_events->RxTimeout != NULL))
 			{
-				if((_p2p != NULL) && (_p2p->RxTimeout != NULL))
-				{
-					_p2p->RxTimeout(TIMER_TYPE);
-				}
+				_events->RxTimeout(RadioPublicNetwork.Current, TIMER_TYPE);
 			}
 		}
 	}
@@ -1572,17 +1522,10 @@ void RadioBgIrqProcess(void)
 					RadioEvents->TxTimeout();
 				}
 
-				if((_lrw != NULL) && (_lrw->TxTimeout != NULL))
-				{
-					_lrw->TxTimeout(TIMER_TYPE);
-				}
 			}
-			else
+			if((_events != NULL) && (_events->TxTimeout != NULL))
 			{
-				if((_p2p != NULL) && (_p2p->TxTimeout != NULL))
-				{
-					_p2p->TxTimeout(TIMER_TYPE);
-				}
+				_events->TxTimeout(RadioPublicNetwork.Current, TIMER_TYPE);
 			}
 		}
 	}
@@ -1603,12 +1546,7 @@ void RadioIrqProcessAfterDeepSleep(void)
 	RadioBgIrqProcess();
 }
 
-void setP2PEvents(loraEvents_t *p2p)
+void setLoRaEvents(loraEvents_t *events)
 {
-	_p2p = p2p;
-}
-
-void setLRWEvents(loraEvents_t *lrw)
-{
-	_lrw = lrw;
+	_events = events;
 }

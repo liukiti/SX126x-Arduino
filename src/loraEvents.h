@@ -7,11 +7,11 @@ typedef enum {
 } timeoutType_t;
 
 typedef struct {
-    void (*TxDone) (void);
-    void (*TxTimeout)(timeoutType_t type);
-    void (*RxDone)(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr);
-    void (*RxTimeout)(timeoutType_t type);
-    void (*RxError)();
+    void (*TxDone) (bool isPublic);
+    void (*TxTimeout)(bool isPublic, timeoutType_t type);
+    void (*RxDone)(bool isPublic, uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr);
+    void (*RxTimeout)(bool isPublic, timeoutType_t type);
+    void (*RxError)(bool isPublic);
     void *param;
 } loraEvents_t;
 
@@ -25,7 +25,6 @@ typedef struct {
 	uint16_t PktLen;
 } lorawanTXParams_t;
 
-void setP2PEvents(loraEvents_t *p2p);
-void setLRWEvents(loraEvents_t *lrw);
+void setLoRaEvents(loraEvents_t *events);
 
 #endif //__LORAEVENTS_H__
