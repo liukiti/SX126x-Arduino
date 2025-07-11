@@ -35,6 +35,9 @@ loraEvents_t *_events;
 TimerEvent_t TxTimeoutTimer;
 TimerEvent_t RxTimeoutTimer;
 
+/** Enforce low datarate optimization */
+bool force_low_dr_opt = false;
+
 /*!
  * @brief Initializes the radio
  *
@@ -322,6 +325,22 @@ void RadioSetMaxPayloadLength(RadioModems_t modem, uint8_t max);
 void RadioSetPublicNetwork(bool enable);
 
 /*!
+ * \brief Sets a custom Sync-Word. Updates the sync byte.
+ *
+ * \remark ATTENTION, changes the LoRaWAN sync word as well. Use with care.
+ *
+ * \param  syncword 2 byte custom Sync-Word to be used
+ */
+void RadioSetCustomSyncWord(uint16_t syncword);
+
+/*!
+ * \brief Get current Sync-Word.
+ *
+ * \param  syncword 2 byte custom Sync-Word in use
+ */
+uint16_t RadioGetSyncWord(void);
+
+/*!
  * @brief Gets the time required for the board plus radio to get out of sleep.[ms]
  *
  * @retval time Radio plus board wakeup time in ms.
@@ -359,6 +378,13 @@ void RadioRxBoosted(uint32_t timeout);
 void RadioSetRxDutyCycle(uint32_t rxTime, uint32_t sleepTime);
 
 /*!
+ * @brief Enforce usage of Low Datarate optimization
+ *
+ * @param   enforce       True = Enforce usage of Low Datarate optimization
+ */
+void RadioEnforceLowDRopt(bool enforce);
+
+/*!
  * Radio driver structure initialization
  */
 const struct Radio_s Radio =
@@ -388,13 +414,17 @@ const struct Radio_s Radio =
 		RadioReadBuffer,
 		RadioSetMaxPayloadLength,
 		RadioSetPublicNetwork,
+		RadioSetCustomSyncWord,
+		RadioGetSyncWord,
 		RadioGetWakeupTime,
 		RadioBgIrqProcess,
 		RadioIrqProcess,
 		RadioIrqProcessAfterDeepSleep,
 		// Available on SX126x only
 		RadioRxBoosted,
-		RadioSetRxDutyCycle};
+		RadioEnforceLowDRopt,
+		RadioSetRxDutyCycle,
+};
 
 /*
  * Local types definition
@@ -466,6 +496,8 @@ bool TimerRxTimeout = false;
 bool TimerTxTimeout = false;
 
 RadioModems_t _modem;
+
+bool hasCustomSyncWord = false;
 
 /*
  * SX126x DIO IRQ callback functions prototype
@@ -614,12 +646,17 @@ void RadioSetModem(RadioModems_t modem)
 		break;
 	case MODEM_LORA:
 		SX126xSetPacketType(PACKET_TYPE_LORA);
-		// Public/Private network register is reset when switching modems
-		if (RadioPublicNetwork.Current != RadioPublicNetwork.Previous)
+		// check first if a custom SyncWord is set
+		if (!hasCustomSyncWord)
 		{
-			RadioPublicNetwork.Current = RadioPublicNetwork.Previous;
-			RadioSetPublicNetwork(RadioPublicNetwork.Current);
+			// Public/Private network register is reset when switching modems
+			if (RadioPublicNetwork.Current != RadioPublicNetwork.Previous)
+			{
+				RadioPublicNetwork.Current = RadioPublicNetwork.Previous;
+				RadioSetPublicNetwork(RadioPublicNetwork.Current);
+			}
 		}
+
 		_modem = modem;
 		break;
 	}
@@ -764,7 +801,7 @@ void RadioSetRxConfig(RadioModems_t modem, uint32_t bandwidth,
 		SX126x.ModulationParams.Params.LoRa.CodingRate = (RadioLoRaCodingRates_t)coderate;
 
 		if (((bandwidth == 0) && ((datarate == 11) || (datarate == 12))) ||
-			((bandwidth == 1) && (datarate == 12)))
+			((bandwidth == 1) && (datarate == 12)) || force_low_dr_opt)
 		{
 			SX126x.ModulationParams.Params.LoRa.LowDatarateOptimize = 0x01;
 		}
@@ -881,7 +918,7 @@ void RadioSetTxConfig(RadioModems_t modem, int8_t power, uint32_t fdev,
 		SX126x.ModulationParams.Params.LoRa.CodingRate = (RadioLoRaCodingRates_t)coderate;
 
 		if (((bandwidth == 0) && ((datarate == 11) || (datarate == 12))) ||
-			((bandwidth == 1) && (datarate == 12)))
+			((bandwidth == 1) && (datarate == 12)) || force_low_dr_opt)
 		{
 			SX126x.ModulationParams.Params.LoRa.LowDatarateOptimize = 0x01;
 		}
@@ -1197,6 +1234,7 @@ void RadioSetMaxPayloadLength(RadioModems_t modem, uint8_t max)
 
 void RadioSetPublicNetwork(bool enable)
 {
+	hasCustomSyncWord = false;
 	RadioPublicNetwork.Current = RadioPublicNetwork.Previous = enable;
 
 	RadioSetModem(MODEM_LORA);
@@ -1212,6 +1250,24 @@ void RadioSetPublicNetwork(bool enable)
 		SX126xWriteRegister(REG_LR_SYNCWORD, (LORA_MAC_PRIVATE_SYNCWORD >> 8) & 0xFF);
 		SX126xWriteRegister(REG_LR_SYNCWORD + 1, LORA_MAC_PRIVATE_SYNCWORD & 0xFF);
 	}
+}
+
+void RadioSetCustomSyncWord(uint16_t syncword)
+{
+	hasCustomSyncWord = true;
+	RadioSetModem(MODEM_LORA);
+	SX126xWriteRegister(REG_LR_SYNCWORD, (syncword >> 8) & 0xFF);
+	SX126xWriteRegister(REG_LR_SYNCWORD + 1, syncword & 0xFF);
+}
+
+uint16_t RadioGetSyncWord(void)
+{
+	uint8_t syncWord[8];
+	RadioSetModem(MODEM_LORA);
+	syncWord[0] = SX126xReadRegister(REG_LR_SYNCWORD);
+	syncWord[1] = SX126xReadRegister(REG_LR_SYNCWORD + 1);
+
+	return (uint16_t)(syncWord[0] << 8) + (uint16_t)(syncWord[1]);
 }
 
 uint32_t RadioGetWakeupTime(void)
@@ -1256,6 +1312,18 @@ void RadioOnRxTimeoutIrq(void)
 	RadioBgIrqProcess();
 	RadioStandby();
 	RadioSleep();
+}
+
+void RadioEnforceLowDRopt(bool enforce)
+{
+	if (enforce)
+	{
+		force_low_dr_opt = true;
+	}
+	else
+	{
+		force_low_dr_opt = false;
+	}
 }
 
 #if defined NRF52_SERIES || defined ESP32 || defined ARDUINO_RAKWIRELESS_RAK11300

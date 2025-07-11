@@ -4,6 +4,29 @@ Arduino library for LoRa communication with Semtech SX126x chips. It is based on
 
 # Release Notes
 
+# V2.0.31 Fix RAK3112
+  - Correct LoRa pin assignment for RAK3112
+  
+# V2.0.30 Fix RP2040 assert issue
+  - Set timer priority correct, thanks to _**@EdisonAgudelo**_
+  - Add RAK3112 support
+
+# V2.0.29 Add read the Syncword function
+  - Add radio function to read the radio syncword uint16_t syncword = Radio.GetSyncWord(void);
+  
+# V2.0.28 Add custom Syncword and Low DataRate optimization
+  - Add radio function to set a custom Syncword Radio.SetCustomSyncWord(uint16_t syncword);
+  - Add radio function to enforce Low DataRate optimization Radio.EnforceLowDRopt(bool enforce);
+  
+# V2.0.27 Access to NWsKey and AppsKey
+  - Add functions to get network session key and app session key after join
+  
+# V2.0.26 Add missing header file
+  - Fix compilation error
+  
+# V2.0.25 Fix DR reset with ADR enabled
+  - With ADR enabled, fix the DR reset to default when confirmed/unconfirmed packets are sent.
+  
 ## V2.0.24 Fix P2P RX timeout callback fails
   - Fix callbacks for P2P RX and TX timeout not being called
 

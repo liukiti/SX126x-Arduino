@@ -88,6 +88,22 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ----
 ## Changelog
 [Code releases](CHANGELOG.md)
+- 2025-06-06 Fix RAK3112
+  - Correct LoRa pin assignment for RAK3112
+- 2025-01-16 Fix RP2040 assert issue
+  - Set timer priority correct, thanks to _**@EdisonAgudelo**_
+  - Add RAK3112 support
+- 2025-01-05 Add function to read the Syncword
+  - Add radio function to read the radio syncword uint16_t syncword = Radio.GetSyncWord(void);
+- 2025-01-01 Add custom Syncword and Low DataRate optimization
+  - Add radio function to set a custom Syncword Radio.SetCustomSyncWord(uint16_t syncword);
+  - Add radio function to enforce Low DataRate optimization Radio.EnforceLowDRopt(bool enforce);
+- 2024-10-17 Access to NWsKey and AppsKey
+  - Add functions to get network session key and app session key after join
+- 2024-07-02 Add missing header file
+  - Fix compilation error
+- 2024-06-26 
+  - With ADR enabled, fix the DR reset to default when confirmed/unconfirmed packets are sent.
 - 2024-02-24
   - Fix callbacks for P2P RX and TX timeout not being called
 - 2023-12-14

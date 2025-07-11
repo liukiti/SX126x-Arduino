@@ -24,6 +24,8 @@
 #include "system/utilities.h"
 
 #include "mac/LoRaMacTest.h"
+#include "mac/LoRaMac.h"
+extern LoRaMacParams_t LoRaMacParams;
 
 uint16_t ChannelsMask[6];
 uint16_t ChannelsDefaultMask[6];
@@ -403,7 +405,10 @@ static void McpsConfirm(McpsConfirm_t *mcpsConfirm)
 		{
 			m_callbacks->lmh_conf_result(mcpsConfirm->AckReceived);
 			// Workaround, reset MAC state
+			// Workaround for DR reset when ADR is active
+			int8_t preserve_dr = LoRaMacParams.ChannelsDatarate;
 			lmh_reset_mac();
+			LoRaMacParams.ChannelsDatarate = preserve_dr;
 		}
 		break;
 	}
@@ -1097,7 +1102,7 @@ lmh_error_status lmh_class_request(DeviceClass_t newClass)
 
 		case CLASS_C:
 		{
-			if (currentClass != CLASS_A)
+			if (currentClass != CLASS_C)
 			{
 				Errorstatus = LMH_ERROR;
 			}
@@ -1146,6 +1151,22 @@ void lmh_class_get(DeviceClass_t *currentClass)
 uint32_t lmh_getDevAddr(void)
 {
 	return LoRaMacGetOTAADevId();
+}
+
+void lmh_getNwSkey(uint8_t *key)
+{
+	for (int idx = 0; idx < 16; idx++)
+	{
+		key[idx] = LoRaMacNwkSKey[idx];
+	}
+}
+
+void lmh_getAppSkey(uint8_t *key)
+{
+	for (int idx = 0; idx < 16; idx++)
+	{
+		key[idx] = LoRaMacAppSKey[idx];
+	}
 }
 
 /**
