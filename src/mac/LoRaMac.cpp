@@ -414,7 +414,7 @@ static uint8_t RxSlot = 0;
  */
 LoRaMacFlags_t LoRaMacFlags;
 
-static lorawanTXParams_t *_txParams;
+static lorawanParams_t *_loraParams;
 /*!
  * \brief Function to be executed on Radio Tx Done event
  */
@@ -2407,15 +2407,15 @@ LoRaMacStatus_t SendFrameOnChannel(uint8_t channel)
 	}
 	LOG_LIB("LM", "Counter: %ld | Channel = %d | ", UpLinkCounter, channel);
 	
-	if(_txParams != NULL)
+	if(_loraParams != NULL)
 	{
-		_txParams->AntennaGain = txConfig.AntennaGain; 
-		_txParams->channel = channel;
-		_txParams->Datarate = txConfig.Datarate;
-		_txParams->MaxEirp = txConfig.MaxEirp;
-		_txParams->PktLen = txConfig.PktLen;
-		_txParams->TxPower = txConfig.TxPower;
-		_txParams->UpLinkCounter = UpLinkCounter;
+		_loraParams->AntennaGain = txConfig.AntennaGain; 
+		_loraParams->channel = channel;
+		_loraParams->Datarate = txConfig.Datarate;
+		_loraParams->MaxEirp = txConfig.MaxEirp;
+		_loraParams->PktLen = txConfig.PktLen;
+		_loraParams->TxPower = txConfig.TxPower;
+		_loraParams->UpLinkCounter = UpLinkCounter;
 	}
 	// Send now
 	Radio.Send(LoRaMacBuffer, LoRaMacBufferPktLen);
@@ -2460,7 +2460,7 @@ LoRaMacStatus_t SetTxContinuousWave1(uint16_t timeout, uint32_t frequency, uint8
 	return LORAMAC_STATUS_OK;
 }
 
-LoRaMacStatus_t LoRaMacInitialization(LoRaMacPrimitives_t *primitives, LoRaMacCallback_t *callbacks, LoRaMacRegion_t region, eDeviceClass nodeClass, bool region_change, lorawanTXParams_t *txParams)
+LoRaMacStatus_t LoRaMacInitialization(LoRaMacPrimitives_t *primitives, LoRaMacCallback_t *callbacks, LoRaMacRegion_t region, eDeviceClass nodeClass, bool region_change, lorawanParams_t *loraParams)
 {
 	GetPhyParams_t getPhy;
 	PhyParam_t phyParam;
@@ -2485,7 +2485,7 @@ LoRaMacStatus_t LoRaMacInitialization(LoRaMacPrimitives_t *primitives, LoRaMacCa
 	LoRaMacPrimitives = primitives;
 	LoRaMacCallbacks = callbacks;
 	LoRaMacRegion = region;
-	_txParams = txParams;
+	_loraParams = loraParams;
 
 	LoRaMacFlags.Value = 0;
 
@@ -2592,6 +2592,8 @@ LoRaMacStatus_t LoRaMacInitialization(LoRaMacPrimitives_t *primitives, LoRaMacCa
 
 		// Store the current initialization time
 		LoRaMacInitializationTime = TimerGetCurrentTime();
+		_loraParams->Rx1Timer=&RxWindowTimer1;
+		_loraParams->Rx2Timer=&RxWindowTimer2;  
 	}
 
 	// Initialize Radio driver

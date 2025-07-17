@@ -23,7 +23,9 @@ typedef struct {
 	float MaxEirp;
 	float AntennaGain;
 	uint16_t PktLen;
-} lorawanTXParams_t;
+    TimerEvent_t *Rx1Timer;
+    TimerEvent_t *Rx2Timer;
+} lorawanParams_t;
 
 void setLoRaEvents(loraEvents_t *events);
 
