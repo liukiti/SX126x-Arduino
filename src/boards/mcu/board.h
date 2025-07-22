@@ -75,6 +75,7 @@ struct hw_config
 	bool USE_LDO = false;			  // Whether SX126x uses LDO or DCDC power regulator
 	bool USE_RXEN_ANT_PWR = false;	  // Whether RX_EN is used as antenna power
 	RadioTcxoCtrlVoltage_t TCXO_CTRL_VOLTAGE = TCXO_CTRL_3_3V;
+	uint32_t* timerArray;
 };
 
 #if defined ARDUINO_ARCH_RP2040 && not defined ARDUINO_RAKWIRELESS_RAK11300
@@ -90,13 +91,13 @@ extern hw_config _hwConfig;
  *
  * @param [hwConfig] hw_config describes the HW connection between the MCU and the SX126x
  */
-uint32_t lora_hardware_init(hw_config hwConfig);
+uint32_t lora_hardware_init(hw_config* hwConfig);
 
 /**@brief Initializes the target board peripherals after deep sleep wake up.
  *
  * @param [hwConfig] hw_config describes the HW connection between the MCU and the SX126x
  */
-uint32_t lora_hardware_re_init(hw_config hwConfig);
+uint32_t lora_hardware_re_init(hw_config* hwConfig);
 
 /**@brief Initializes the ISP4520 board peripherals.
  *

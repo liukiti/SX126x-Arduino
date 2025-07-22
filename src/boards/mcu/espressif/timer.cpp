@@ -43,9 +43,10 @@ bool timerInUse[10] = {false, false, false, false, false, false, false, false, f
 
 // External functions
 
-void TimerConfig(void)
+uint32_t* TimerConfig(void)
 {
 	/// \todo Nothing to do here for ESP32
+	return timerTimes;
 }
 
 void TimerInit(TimerEvent_t *obj, void (*callback)(void))

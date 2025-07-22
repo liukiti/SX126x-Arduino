@@ -73,7 +73,12 @@ typedef uint32_t TimerTime_t;
  *			Enable CC interrupt
  *			Start RTC2
  */
+#if defined(ESP32)
+uint32_t* TimerConfig(void);
+#else
 void TimerConfig(void);
+#endif
+
 
 /**@brief Initializes the timer object
  *
