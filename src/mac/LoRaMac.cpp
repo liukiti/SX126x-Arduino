@@ -608,7 +608,7 @@ LoRaMacStatus_t SetTxContinuousWave1(uint16_t timeout, uint32_t frequency, uint8
 /*!
  * \brief Resets MAC specific parameters to default
  */
-static void ResetMacParameters(void);
+static void ResetMacParameters(lorawanParams_t *loraParams);
 
 static void OnRadioTxDone(void)
 {
@@ -2151,11 +2151,20 @@ void ResetMacCounters(void)
 	LastTxChannel = Channel;
 }
 
-static void ResetMacParameters(void)
+static void ResetMacParameters(lorawanParams_t *loraParams)
 {
 	// Counters
-	UpLinkCounter = 0;
-	DownLinkCounter = 0;
+	if(loraParams!=NULL)
+	{
+		UpLinkCounter = loraParams->UpLinkCounter;
+		DownLinkCounter = loraParams->DownLinkCounter;
+	}
+	else
+	{
+		UpLinkCounter = 0;
+		DownLinkCounter = 0;
+	}
+
 	AdrAckCounter = 0;
 
 	ChannelsNbRepCounter = 0;
@@ -2577,7 +2586,7 @@ LoRaMacStatus_t LoRaMacInitialization(LoRaMacPrimitives_t *primitives, LoRaMacCa
 	LoRaMacParams.JoinAcceptDelay2 = LoRaMacParamsDefaults.JoinAcceptDelay2;
 	LoRaMacParams.ChannelsNbRep = LoRaMacParamsDefaults.ChannelsNbRep;
 
-	ResetMacParameters();
+	ResetMacParameters(_loraParams);
 
 	if (!region_change)
 	{
@@ -3356,7 +3365,7 @@ LoRaMacStatus_t LoRaMacMlmeRequest(MlmeReq_t *mlmeRequest)
 		macHdr.Value = 0;
 		macHdr.Bits.MType = FRAME_TYPE_JOIN_REQ;
 
-		ResetMacParameters();
+		ResetMacParameters(_loraParams);
 
 		altDr.NbTrials = JoinRequestTrials + 1;
 

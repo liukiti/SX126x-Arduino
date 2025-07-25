@@ -17,6 +17,7 @@ typedef struct {
 
 typedef struct {
     uint32_t UpLinkCounter;
+    uint32_t DownLinkCounter;
     uint8_t channel;
 	int8_t Datarate;
 	int8_t TxPower;
