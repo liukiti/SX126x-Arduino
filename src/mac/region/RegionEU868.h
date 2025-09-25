@@ -53,7 +53,7 @@
 /*!
  * Minimal datarate that can be used by the node
  */
-#define EU868_TX_MIN_DATARATE DR_0
+#define EU868_TX_MIN_DATARATE DR_3
 
 /*!
  * Maximal datarate that can be used by the node
@@ -63,7 +63,7 @@
 /*!
  * Minimal datarate that can be used by the node
  */
-#define EU868_RX_MIN_DATARATE DR_0
+#define EU868_RX_MIN_DATARATE DR_3
 
 /*!
  * Maximal datarate that can be used by the node
@@ -73,7 +73,7 @@
 /*!
  * Default datarate used by the node
  */
-#define EU868_DEFAULT_DATARATE DR_0
+#define EU868_DEFAULT_DATARATE DR_3
 
 /*!
  * Minimal Rx1 receive datarate offset
@@ -182,7 +182,7 @@
 /*!
  * Second reception window channel datarate definition.
  */
-#define EU868_RX_WND_2_DR DR_0
+#define EU868_RX_WND_2_DR DR_3
 
 /*!
  * Maximum number of bands
