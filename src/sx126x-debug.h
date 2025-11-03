@@ -15,7 +15,7 @@
 // If not on PIO or not defined in platformio.ini
 #ifndef LIB_DEBUG
 // Debug output set to 0 to disable app debug output
-#define LIB_DEBUG 0
+#define LIB_DEBUG 1
 #endif
 
 #if LIB_DEBUG > 0
@@ -23,9 +23,9 @@
 	do                                   \
 	{                                    \
 		if (tag)                         \
-			Serial.printf("<%s> ", tag); \
-		Serial.printf(__VA_ARGS__);      \
-		Serial.printf("\n");             \
+			ESP_LOGI(tag,__VA_ARGS__);   \
+		else                             \
+			ESP_LOGI("sx126x", __VA_ARGS__);\
 	} while (0)
 #else
 #define LOG_LIB(...)
