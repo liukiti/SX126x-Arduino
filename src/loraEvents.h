@@ -1,5 +1,6 @@
 #ifndef __LORAEVENTS_H__
 #define __LORAEVENTS_H__
+#include "boards/mcu/timer.h"
 
 typedef enum {
     IRQ_TYPE = 0,
